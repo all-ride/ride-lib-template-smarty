@@ -1,0 +1,198 @@
+<?php
+
+namespace pallo\library\template;
+
+use pallo\library\system\file\browser\FileBrowser;
+use pallo\library\template\exception\ResourceNotFoundException;
+
+use \Smarty_Resource_Custom;
+use \Smarty;
+
+// load Smarty to get the Smarty_Resource_Custom class is loaded
+Smarty::SMARTY_VERSION;
+
+/**
+ * Default resource handler for Smarty according to the Zibo standards
+ */
+class SmartyResourceHandler extends Smarty_Resource_Custom {
+
+    /**
+     * Extension suffix to be added to the name of the source
+     * @var string
+     */
+    const EXTENSION = 'tpl';
+
+    /**
+     * File browser to lookup the templates
+     * @var pallo\library\system\file\browser\FileBrowser;
+     */
+    protected $fileBrowser;
+
+    /**
+     * Path for the file browser
+     * @var string
+     */
+    protected $path;
+
+    /**
+     * Name of the current theme
+     * @var string
+     */
+    protected $theme;
+
+    /**
+     * Id of the template
+     * @var string
+     */
+    protected $templateId;
+
+    /**
+     * Constructs a new resource handler
+     * @param pallo\library\system\file\browser\FileBrowser $fileBrowser File
+     * browser to lookup the templates
+     * @return null
+     */
+    public function __construct(FileBrowser $fileBrowser, $path = null) {
+        $this->fileBrowser = $fileBrowser;
+
+        $this->setPath($path);
+        $this->setTheme(null);
+    }
+
+    /**
+     * Sets the path for the file browser
+     * @param string $path
+     * @return null
+     * @throws pallo\library\template\exception\TemplateException when the
+     * provided path is invalid or empty
+     */
+    public function setPath($path) {
+        if ($path !== null && (!is_string($path) || !$path)) {
+            throw new TemplateException('Could not set the path for the file browser: provided path is empty or invalid');
+        }
+
+        $this->path = $path;
+    }
+
+    /**
+     * Sets the current theme
+     * @param string $theme Name of the theme
+     * @return null
+     * @throws pallo\library\template\exception\TemplateException when the
+     * provided theme is invalid or empty
+     */
+    public function setTheme($theme) {
+        if ($theme === null) {
+            $this->theme = null;
+
+            return;
+        }
+
+        if (!is_string($theme) || !$theme) {
+            throw new TemplateException('Could not set the theme: provided theme is empty or invalid');
+        }
+
+        $this->theme = $theme;
+    }
+
+    /**
+     * Sets the id of the template. Don't forget to set compile_id on the
+     * Smarty engine itself.
+     * @param string $templateId Id of the template
+     * @return null
+     */
+    public function setTemplateId($templateId) {
+        $this->templateId = $templateId;
+    }
+
+    /**
+     * Fetches a template
+     * @param string $name Relative path of the template to the view folder
+     * without the extension
+     * @param string $source Content of the template source file
+     * @param int $timestamp timestamp of the last modification date
+     */
+    protected function fetch($name, &$source, &$timestamp) {
+        $templateFile = $this->getFile($name);
+
+        $source = $templateFile->read();
+        $timestamp = $templateFile->getModificationTime();
+    }
+
+    /**
+     * Fetches the modification date of a template
+     * @param string $name Relative path of the template to the view folder
+     * without the extension
+     * @param int $timestamp Timestamp of the last modification date
+     * @return boolean True if template is found, false otherwise
+     */
+    protected function fetchTimestamp($name) {
+        $templateFile = $this->getFile($name);
+
+        return $templateFile->getModificationTime();
+    }
+
+    /**
+     * Get the source file of a template
+     * @param string $name Relative path of the template to the view folder
+     * without the extension
+     * @return pallo\library\system\file\File instance of a File if the source
+     * is found, null otherwise
+     */
+    public function getFile($name) {
+        if ($this->theme) {
+            try {
+                $file = $this->getThemeFile($name, $this->theme);
+            } catch (ResourceNotFoundException $exception) {
+                $file = $this->getThemeFile($name, 'default');
+            }
+        } else {
+            $file = $this->getThemeFile($name);
+        }
+
+        return $file;
+    }
+
+    /**
+     * Gets the source file of a template
+     * @param string $name Relative path of the template to the view folder
+     * without the extension
+     * @return pallo\library\system\file\File Instance of a File if the source
+     * is found, null otherwise
+     */
+    protected function getThemeFile($name, $theme = null) {
+        $path = '';
+        if ($theme) {
+            $path = $theme . '/';
+        }
+
+        if ($this->path) {
+            $path = $this->path . '/' . $path;
+        }
+
+        if ($path) {
+            $path = rtrim($path, '/') . '/';
+        }
+
+        $file = null;
+
+        if ($this->templateId) {
+            $fileName = $path . $name . '.' . $this->templateId . '.' . self::EXTENSION;
+
+            $file = $this->fileBrowser->getFile($fileName);
+        }
+
+        if (!$file) {
+            $fileName = $path . $name . '.' . self::EXTENSION;
+
+            $file = $this->fileBrowser->getFile($fileName);
+        }
+
+        if (!$file) {
+            throw new ResourceNotFoundException($fileName);
+        }
+
+        return $file;
+    }
+
+}
