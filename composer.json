@@ -11,7 +11,7 @@
     ],
     "require": {
         "pallo/lib-system": ">=0.2.0",
-        "pallo/lib-template": ">=0.1.0",
+        "pallo/lib-template": ">=0.2.0",
         "smarty/smarty": "v3.1.12"
     },
     "autoload": {

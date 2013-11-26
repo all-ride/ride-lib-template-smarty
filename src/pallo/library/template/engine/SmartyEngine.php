@@ -1,9 +1,12 @@
 <?php
 
-namespace pallo\library\template;
+namespace pallo\library\template\engine;
 
 use pallo\library\system\file\File;
 use pallo\library\template\exception\ResourceNotSetException;
+use pallo\library\template\theme\ThemeModel;
+use pallo\library\template\Template;
+use pallo\library\template\ThemedTemplate;
 
 use \Exception;
 use \Smarty;
@@ -11,7 +14,7 @@ use \Smarty;
 /**
  * Implementation of the Smarty template engine
  */
-class SmartyTemplateEngine extends AbstractTemplateEngine {
+class SmartyEngine extends AbstractEngine {
 
     /**
      * Name of this engine
@@ -39,7 +42,7 @@ class SmartyTemplateEngine extends AbstractTemplateEngine {
      * the compiled templates
      * @return null
      */
-    public function __construct(SmartyResourceHandler $resourceHandler, File $compileDirectory) {
+    public function __construct(SmartyResourceHandler $resourceHandler, File $compileDirectory, ThemeModel $themeModel) {
         $compileDirectory->create();
 
         $this->smarty = new Smarty();
@@ -47,6 +50,7 @@ class SmartyTemplateEngine extends AbstractTemplateEngine {
         $this->smarty->compile_dir = $compileDirectory->getPath();
 
         $this->setResourceHandler($resourceHandler);
+        $this->setThemeModel($themeModel);
     }
 
     /**
@@ -96,14 +100,6 @@ class SmartyTemplateEngine extends AbstractTemplateEngine {
     }
 
     /**
-     * Creates a new instance of a template
-     * @return pallo\library\template\Template
-     */
-    protected function createTemplateInstance() {
-        return new SmartyTemplate();
-    }
-
-    /**
      * Renders a template
      * @param pallo\library\template\Template $template Template to render
      * @return string Rendered template
@@ -118,7 +114,11 @@ class SmartyTemplateEngine extends AbstractTemplateEngine {
             throw new ResourceNotSetException();
         }
 
-        if ($template instanceof SmartyTemplate) {
+        if ($template instanceof ThemedTemplate) {
+            $themeHierarchy = $this->getTheme($template);
+
+            $this->resourceHandler->setThemes($themeHierarchy);
+
             $templateId = $template->getResourceId();
             if ($templateId) {
                 $this->resourceHandler->setTemplateId($templateId);
@@ -137,6 +137,7 @@ class SmartyTemplateEngine extends AbstractTemplateEngine {
             $exception = $e;
         }
 
+        $this->resourceHandler->setThemes(null);
         $this->resourceHandler->setTemplateId(null);
         $this->smarty->compile_id = null;
         $this->smarty->clearAllAssign();
