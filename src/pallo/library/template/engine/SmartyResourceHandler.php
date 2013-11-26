@@ -1,6 +1,6 @@
 <?php
 
-namespace pallo\library\template;
+namespace pallo\library\template\engine;
 
 use pallo\library\system\file\browser\FileBrowser;
 use pallo\library\template\exception\ResourceNotFoundException;
@@ -35,10 +35,10 @@ class SmartyResourceHandler extends Smarty_Resource_Custom {
     protected $path;
 
     /**
-     * Name of the current theme
-     * @var string
+     * Themes to use when looking for resources
+     * @var array
      */
-    protected $theme;
+    protected $themes;
 
     /**
      * Id of the template
@@ -56,7 +56,6 @@ class SmartyResourceHandler extends Smarty_Resource_Custom {
         $this->fileBrowser = $fileBrowser;
 
         $this->setPath($path);
-        $this->setTheme(null);
     }
 
     /**
@@ -75,24 +74,14 @@ class SmartyResourceHandler extends Smarty_Resource_Custom {
     }
 
     /**
-     * Sets the current theme
-     * @param string $theme Name of the theme
+     * Sets the themes used for looking the template resource
+     * @param array $themes Array with the name of the themes as key
      * @return null
      * @throws pallo\library\template\exception\TemplateException when the
      * provided theme is invalid or empty
      */
-    public function setTheme($theme) {
-        if ($theme === null) {
-            $this->theme = null;
-
-            return;
-        }
-
-        if (!is_string($theme) || !$theme) {
-            throw new TemplateException('Could not set the theme: provided theme is empty or invalid');
-        }
-
-        $this->theme = $theme;
+    public function setThemes(array $themes = null) {
+        $this->themes = $themes;
     }
 
     /**
@@ -140,13 +129,21 @@ class SmartyResourceHandler extends Smarty_Resource_Custom {
      * is found, null otherwise
      */
     public function getFile($name) {
-        if ($this->theme) {
-            try {
-                $file = $this->getThemeFile($name, $this->theme);
-            } catch (ResourceNotFoundException $exception) {
-                $file = $this->getThemeFile($name, 'default');
+        $file = null;
+
+        if ($this->themes) {
+            foreach ($this->themes as $theme => $null) {
+                try {
+                    $file = $this->getThemeFile($name, $theme);
+
+                    break;
+                } catch (ResourceNotFoundException $exception) {
+                    $file = null;
+                }
             }
-        } else {
+        }
+
+        if (!$file) {
             $file = $this->getThemeFile($name);
         }
 
