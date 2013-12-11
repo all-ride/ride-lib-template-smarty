@@ -2,7 +2,7 @@
     "name": "pallo/lib-template-smarty",
     "description": "Smarty engine for the template library of the Pallo framework.",
     "license": "MIT",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "authors": [
         {
             "name": "Joris Vandeweerd",
@@ -11,8 +11,8 @@
     ],
     "require": {
         "pallo/lib-system": ">=0.2.0",
-        "pallo/lib-template": ">=0.2.0",
-        "smarty/smarty": "v3.1.15"
+        "pallo/lib-template": ">=0.3.0",
+        "smarty/smarty": "*"
     },
     "autoload": {
         "psr-0": {

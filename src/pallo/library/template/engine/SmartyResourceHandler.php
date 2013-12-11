@@ -17,12 +17,6 @@ Smarty::SMARTY_VERSION;
 class SmartyResourceHandler extends Smarty_Resource_Custom {
 
     /**
-     * Extension suffix to be added to the name of the source
-     * @var string
-     */
-    const EXTENSION = 'tpl';
-
-    /**
      * File browser to lookup the templates
      * @var pallo\library\system\file\browser\FileBrowser;
      */
@@ -174,13 +168,13 @@ class SmartyResourceHandler extends Smarty_Resource_Custom {
         $file = null;
 
         if ($this->templateId) {
-            $fileName = $path . $name . '.' . $this->templateId . '.' . self::EXTENSION;
+            $fileName = $path . $name . '.' . $this->templateId . '.' . SmartyEngine::EXTENSION;
 
             $file = $this->fileBrowser->getFile($fileName);
         }
 
         if (!$file) {
-            $fileName = $path . $name . '.' . self::EXTENSION;
+            $fileName = $path . $name . '.' . SmartyEngine::EXTENSION;
 
             $file = $this->fileBrowser->getFile($fileName);
         }

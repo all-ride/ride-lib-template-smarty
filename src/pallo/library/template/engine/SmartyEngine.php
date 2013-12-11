@@ -23,6 +23,12 @@ class SmartyEngine extends AbstractEngine {
     const NAME = 'smarty';
 
     /**
+     * Extension for the template resources
+     * @var string
+     */
+    const EXTENSION = 'tpl';
+
+    /**
      * Instance of the Smarty
      * @var Smarty
      */
@@ -114,21 +120,11 @@ class SmartyEngine extends AbstractEngine {
             throw new ResourceNotSetException();
         }
 
-        if ($template instanceof ThemedTemplate) {
-            $themeHierarchy = $this->getTheme($template);
-
-            $this->resourceHandler->setThemes($themeHierarchy);
-
-            $templateId = $template->getResourceId();
-            if ($templateId) {
-                $this->resourceHandler->setTemplateId($templateId);
-                $this->smarty->compile_id = $templateId;
-            }
-        }
-
-        $this->smarty->assign($template->getVariables());
+        $this->preProcess($template);
 
         try {
+            $this->smarty->assign($template->getVariables());
+
             $output = $this->smarty->fetch($resource);
             $exception = null;
         } catch (Exception $e) {
@@ -137,16 +133,59 @@ class SmartyEngine extends AbstractEngine {
             $exception = $e;
         }
 
-        $this->resourceHandler->setThemes(null);
-        $this->resourceHandler->setTemplateId(null);
-        $this->smarty->compile_id = null;
-        $this->smarty->clearAllAssign();
+        $this->postProcess();
 
         if ($exception) {
             throw $exception;
         }
 
         return $output;
+    }
+
+    /**
+     * Gets the template resource
+     * @param pallo\library\template\Template $template Template to get the
+     * resource of
+     * @return string Absolute path of the template resource
+     * @throws pallo\library\template\exception\ResourceNotSetException when
+     * no template was set to the template
+     * @throws pallo\library\template\exception\ResourceNotFoundException when
+     * the template could not be found by the engine
+     */
+    public function getFile(Template $template) {
+        $resource = $template->getResource();
+        if (!$resource) {
+            throw new ResourceNotSetException();
+        }
+
+        $this->preProcess($template);
+
+        $file = $this->resourceHandler->getFile($resource);
+
+        return $file->getAbsolutePath();
+    }
+
+    protected function preProcess(Template $template) {
+        if (!$template instanceof ThemedTemplate) {
+            return;
+        }
+
+        $themeHierarchy = $this->getTheme($template);
+
+        $this->resourceHandler->setThemes($themeHierarchy);
+
+        $templateId = $template->getResourceId();
+        if ($templateId) {
+            $this->resourceHandler->setTemplateId($templateId);
+            $this->smarty->compile_id = $templateId;
+        }
+    }
+
+    protected function postProcess() {
+        $this->resourceHandler->setThemes(null);
+        $this->resourceHandler->setTemplateId(null);
+        $this->smarty->compile_id = null;
+        $this->smarty->clearAllAssign();
     }
 
 }
