@@ -173,11 +173,12 @@ class SmartyEngine extends AbstractEngine {
         $themeHierarchy = $this->getTheme($template);
 
         $this->resourceHandler->setThemes($themeHierarchy);
+        $this->smarty->compile_id = $template->getTheme();
 
         $templateId = $template->getResourceId();
         if ($templateId) {
             $this->resourceHandler->setTemplateId($templateId);
-            $this->smarty->compile_id = $templateId;
+            $this->smarty->compile_id .= '-' . $templateId;
         }
     }
 
