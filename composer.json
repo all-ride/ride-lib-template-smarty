@@ -1,6 +1,6 @@
 {
-    "name": "pallo/lib-template-smarty",
-    "description": "Smarty engine for the template library of the Pallo framework.",
+    "name": "ride/lib-template-smarty",
+    "description": "Smarty engine for the template library of the Ride framework.",
     "license": "MIT",
     "version": "0.3.2",
     "authors": [
@@ -10,13 +10,13 @@
         }
     ],
     "require": {
-        "pallo/lib-system": ">=0.2.0",
-        "pallo/lib-template": ">=0.3.0",
+        "ride/lib-system": ">=0.2.0",
+        "ride/lib-template": ">=0.3.0",
         "smarty/smarty": "v3.1.16"
     },
     "autoload": {
         "psr-0": {
-            "pallo\\library\\template\\": ["src/", "test/src/"]
+            "ride\\library\\template\\": ["src/", "test/src/"]
         }
     }    
 }
