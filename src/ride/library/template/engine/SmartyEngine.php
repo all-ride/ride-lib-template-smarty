@@ -1,12 +1,12 @@
 <?php
 
-namespace pallo\library\template\engine;
+namespace ride\library\template\engine;
 
-use pallo\library\system\file\File;
-use pallo\library\template\exception\ResourceNotSetException;
-use pallo\library\template\theme\ThemeModel;
-use pallo\library\template\Template;
-use pallo\library\template\ThemedTemplate;
+use ride\library\system\file\File;
+use ride\library\template\exception\ResourceNotSetException;
+use ride\library\template\theme\ThemeModel;
+use ride\library\template\Template;
+use ride\library\template\ThemedTemplate;
 
 use \Exception;
 use \Smarty;
@@ -36,15 +36,15 @@ class SmartyEngine extends AbstractEngine {
 
     /**
      * Implementation of the resource handler
-     * @var pallo\library\template\SmartyResourceHandler
+     * @var ride\library\template\SmartyResourceHandler
      */
     protected $resourceHandler;
 
     /**
      * Constructs a new Smarty template engine
-     * @param pallo\library\template\SmartyResourceHandler $resourceHandler
+     * @param ride\library\template\SmartyResourceHandler $resourceHandler
      * Resource handler for the template engine
-     * @param pallo\library\system\file\File $compileDirectory Directory for
+     * @param ride\library\system\file\File $compileDirectory Directory for
      * the compiled templates
      * @return null
      */
@@ -61,20 +61,20 @@ class SmartyEngine extends AbstractEngine {
 
     /**
      * Sets the resource handler for the template engine
-     * @param pallo\library\template\SmartyResourceHandler
+     * @param ride\library\template\SmartyResourceHandler
      * $resourceHandler Handler of template resources
      * @return null
      */
     public function setResourceHandler(SmartyResourceHandler $resourceHandler) {
-        $this->smarty->registerResource('pallo', $resourceHandler);
-        $this->smarty->default_resource_type = 'pallo';
+        $this->smarty->registerResource('ride', $resourceHandler);
+        $this->smarty->default_resource_type = 'ride';
 
         $this->resourceHandler = $resourceHandler;
     }
 
     /**
      * Gets the resource handler of the template engine
-     * @return pallo\library\template\SmartyResourceHandler
+     * @return ride\library\template\SmartyResourceHandler
      */
     public function getResourceHandler() {
         return $this->resourceHandler;
@@ -107,11 +107,11 @@ class SmartyEngine extends AbstractEngine {
 
     /**
      * Renders a template
-     * @param pallo\library\template\Template $template Template to render
+     * @param ride\library\template\Template $template Template to render
      * @return string Rendered template
-     * @throws pallo\library\template\exception\ResourceNotSetException when
+     * @throws ride\library\template\exception\ResourceNotSetException when
      * no template resource was set to the template
-     * @throws pallo\library\template\exception\ResourceNotFoundException when
+     * @throws ride\library\template\exception\ResourceNotFoundException when
      * the template resource could not be found by the engine
      */
     public function render(Template $template) {
@@ -144,12 +144,12 @@ class SmartyEngine extends AbstractEngine {
 
     /**
      * Gets the template resource
-     * @param pallo\library\template\Template $template Template to get the
+     * @param ride\library\template\Template $template Template to get the
      * resource of
      * @return string Absolute path of the template resource
-     * @throws pallo\library\template\exception\ResourceNotSetException when
+     * @throws ride\library\template\exception\ResourceNotSetException when
      * no template was set to the template
-     * @throws pallo\library\template\exception\ResourceNotFoundException when
+     * @throws ride\library\template\exception\ResourceNotFoundException when
      * the template could not be found by the engine
      */
     public function getFile(Template $template) {
