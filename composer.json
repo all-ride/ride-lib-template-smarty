@@ -2,7 +2,7 @@
     "name": "ride/lib-template-smarty",
     "description": "Smarty engine for the template library of the Ride framework.",
     "license": "MIT",
-    "version": "0.3.2",
+    "version": "0.4.0",
     "authors": [
         {
             "name": "Joris Vandeweerd",
