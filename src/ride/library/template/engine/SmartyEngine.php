@@ -35,15 +35,15 @@ class SmartyEngine extends AbstractEngine {
 
     /**
      * Implementation of the resource handler
-     * @var ride\library\template\SmartyResourceHandler
+     * @var \ride\library\template\SmartyResourceHandler
      */
     protected $resourceHandler;
 
     /**
      * Constructs a new Smarty template engine
-     * @param ride\library\template\SmartyResourceHandler $resourceHandler
+     * @param \ride\library\template\SmartyResourceHandler $resourceHandler
      * Resource handler for the template engine
-     * @param ride\library\system\file\File $compileDirectory Directory for
+     * @param \ride\library\system\file\File $compileDirectory Directory for
      * the compiled templates
      * @return null
      */
@@ -72,7 +72,7 @@ class SmartyEngine extends AbstractEngine {
 
     /**
      * Gets the resource handler of the template engine
-     * @return ride\library\template\SmartyResourceHandler
+     * @return \ride\library\template\SmartyResourceHandler
      */
     public function getResourceHandler() {
         return $this->resourceHandler;
@@ -105,11 +105,11 @@ class SmartyEngine extends AbstractEngine {
 
     /**
      * Renders a template
-     * @param ride\library\template\Template $template Template to render
+     * @param \ride\library\template\Template $template Template to render
      * @return string Rendered template
-     * @throws ride\library\template\exception\ResourceNotSetException when
+     * @throws \ride\library\template\exception\ResourceNotSetException when
      * no template resource was set to the template
-     * @throws ride\library\template\exception\ResourceNotFoundException when
+     * @throws \ride\library\template\exception\ResourceNotFoundException when
      * the template resource could not be found by the engine
      */
     public function render(Template $template) {
@@ -142,12 +142,12 @@ class SmartyEngine extends AbstractEngine {
 
     /**
      * Gets the template resource
-     * @param ride\library\template\Template $template Template to get the
+     * @param \ride\library\template\Template $template Template to get the
      * resource of
      * @return string Absolute path of the template resource
-     * @throws ride\library\template\exception\ResourceNotSetException when
+     * @throws \ride\library\template\exception\ResourceNotSetException when
      * no template was set to the template
-     * @throws ride\library\template\exception\ResourceNotFoundException when
+     * @throws \ride\library\template\exception\ResourceNotFoundException when
      * the template could not be found by the engine
      */
     public function getFile(Template $template) {

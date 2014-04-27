@@ -18,7 +18,7 @@ class SmartyResourceHandler extends Smarty_Resource_Custom {
 
     /**
      * File browser to lookup the templates
-     * @var ride\library\system\file\browser\FileBrowser;
+     * @var \ride\library\system\file\browser\FileBrowser;
      */
     protected $fileBrowser;
 
@@ -42,7 +42,7 @@ class SmartyResourceHandler extends Smarty_Resource_Custom {
 
     /**
      * Constructs a new resource handler
-     * @param ride\library\system\file\browser\FileBrowser $fileBrowser File
+     * @param \ride\library\system\file\browser\FileBrowser $fileBrowser File
      * browser to lookup the templates
      * @return null
      */
@@ -56,7 +56,7 @@ class SmartyResourceHandler extends Smarty_Resource_Custom {
      * Sets the path for the file browser
      * @param string $path
      * @return null
-     * @throws ride\library\template\exception\TemplateException when the
+     * @throws \ride\library\template\exception\TemplateException when the
      * provided path is invalid or empty
      */
     public function setPath($path) {
@@ -71,7 +71,7 @@ class SmartyResourceHandler extends Smarty_Resource_Custom {
      * Sets the themes used for looking the template resource
      * @param array $themes Array with the name of the themes as key
      * @return null
-     * @throws ride\library\template\exception\TemplateException when the
+     * @throws \ride\library\template\exception\TemplateException when the
      * provided theme is invalid or empty
      */
     public function setThemes(array $themes = null) {
@@ -119,7 +119,7 @@ class SmartyResourceHandler extends Smarty_Resource_Custom {
      * Get the source file of a template
      * @param string $name Relative path of the template to the view folder
      * without the extension
-     * @return ride\library\system\file\File instance of a File if the source
+     * @return \ride\library\system\file\File instance of a File if the source
      * is found, null otherwise
      */
     public function getFile($name) {
@@ -148,7 +148,7 @@ class SmartyResourceHandler extends Smarty_Resource_Custom {
      * Gets the source file of a template
      * @param string $name Relative path of the template to the view folder
      * without the extension
-     * @return ride\library\system\file\File Instance of a File if the source
+     * @return \ride\library\system\file\File Instance of a File if the source
      * is found, null otherwise
      */
     protected function getThemeFile($name, $theme = null) {
