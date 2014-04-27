@@ -4,7 +4,6 @@ namespace ride\library\template\engine;
 
 use ride\library\system\file\File;
 use ride\library\template\exception\ResourceNotSetException;
-use ride\library\template\theme\ThemeModel;
 use ride\library\template\Template;
 use ride\library\template\ThemedTemplate;
 
@@ -48,7 +47,7 @@ class SmartyEngine extends AbstractEngine {
      * the compiled templates
      * @return null
      */
-    public function __construct(SmartyResourceHandler $resourceHandler, File $compileDirectory, ThemeModel $themeModel) {
+    public function __construct(SmartyResourceHandler $resourceHandler, File $compileDirectory) {
         $compileDirectory->create();
 
         $this->smarty = new Smarty();
@@ -56,7 +55,6 @@ class SmartyEngine extends AbstractEngine {
         $this->smarty->compile_dir = $compileDirectory->getPath();
 
         $this->setResourceHandler($resourceHandler);
-        $this->setThemeModel($themeModel);
     }
 
     /**
