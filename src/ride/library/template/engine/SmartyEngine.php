@@ -163,6 +163,31 @@ class SmartyEngine extends AbstractEngine {
         return $file->getAbsolutePath();
     }
 
+    /**
+     * Gets the available template resources for the provided namespace
+     * @param string $namespace
+     * @param string $theme
+     * @return array Array with the relative path of the resource as key and the
+     * name as value
+     */
+    public function getFiles($namespace, $theme = null) {
+        $theme = $this->themeModel->getTheme($theme);
+        $themeHierarchy = $this->getThemeHierarchy($theme);
+
+        $this->resourceHandler->setThemes($themeHierarchy);
+
+        $files = $this->resourceHandler->getFiles($namespace);
+
+        $this->postProcess();
+
+        return $files;
+    }
+
+    /**
+     * Preprocess this engine before performing a template action
+     * @param \ride\library\template\Template $template
+     * @return null
+     */
     protected function preProcess(Template $template) {
         if (!$template instanceof ThemedTemplate) {
             return;
@@ -180,6 +205,10 @@ class SmartyEngine extends AbstractEngine {
         }
     }
 
+    /**
+     * Postprocess this engine after performing a template action
+     * @return null
+     */
     protected function postProcess() {
         $this->resourceHandler->setThemes(null);
         $this->resourceHandler->setTemplateId(null);
