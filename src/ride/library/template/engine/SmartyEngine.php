@@ -28,6 +28,18 @@ class SmartyEngine extends AbstractEngine {
     const EXTENSION = 'tpl';
 
     /**
+     * Tag to open a block comment
+     * @var string
+     */
+    const COMMENT_OPEN = '{*';
+
+    /**
+     * Tag to close a block comment
+     * @var string
+     */
+    const COMMENT_CLOSE = '*}';
+
+    /**
      * Instance of the Smarty
      * @var Smarty
      */
@@ -144,7 +156,8 @@ class SmartyEngine extends AbstractEngine {
      * Gets the template resource
      * @param \ride\library\template\Template $template Template to get the
      * resource of
-     * @return string Absolute path of the template resource
+     * @return \ride\library\system\file\File $file File instance for the
+     * template resource
      * @throws \ride\library\template\exception\ResourceNotSetException when
      * no template was set to the template
      * @throws \ride\library\template\exception\ResourceNotFoundException when
@@ -158,9 +171,7 @@ class SmartyEngine extends AbstractEngine {
 
         $this->preProcess($template);
 
-        $file = $this->resourceHandler->getFile($resource);
-
-        return $file->getAbsolutePath();
+        return $this->resourceHandler->getFile($resource);
     }
 
     /**
