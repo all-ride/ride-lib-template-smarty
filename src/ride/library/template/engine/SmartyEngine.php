@@ -4,6 +4,7 @@ namespace ride\library\template\engine;
 
 use ride\library\system\file\File;
 use ride\library\template\exception\ResourceNotSetException;
+use ride\library\template\exception\TemplateException;
 use ride\library\template\Template;
 use ride\library\template\ThemedTemplate;
 
@@ -137,10 +138,10 @@ class SmartyEngine extends AbstractEngine {
 
             $output = $this->smarty->fetch($resource);
             $exception = null;
-        } catch (Exception $e) {
+        } catch (Exception $exception) {
             ob_get_clean();
 
-            $exception = $e;
+            $exception = new TemplateException('Could not render ' . $resource, 0, $exception);
         }
 
         $this->postProcess();
