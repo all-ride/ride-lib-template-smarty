@@ -198,7 +198,6 @@ class SmartyResourceHandler extends Smarty_Resource_Custom {
         if ($this->path) {
             $basePath = $this->path . '/';
         }
-
         if ($this->themes) {
             foreach ($this->themes as $theme => $null) {
                 $path = $basePath . $theme . '/' . $namespace;
@@ -230,6 +229,8 @@ class SmartyResourceHandler extends Smarty_Resource_Custom {
             return $files;
         }
 
+        $path = rtrim($path, '/') . '/';
+
         foreach ($pathDirectories as $pathDirectory) {
             $pathFiles = $pathDirectory->read();
             foreach ($pathFiles as $pathFile) {
@@ -239,8 +240,9 @@ class SmartyResourceHandler extends Smarty_Resource_Custom {
 
                 $pathFile = $this->fileBrowser->getRelativeFile($pathFile);
                 $filePath = $pathFile->getPath();
+
                 $resultPath = substr(str_replace($basePath, '', $filePath), 0, (strlen(SmartyEngine::EXTENSION) + 1) * -1);
-                $resultName = substr(str_replace($path . '/', '', $filePath), 0, (strlen(SmartyEngine::EXTENSION) + 1) * -1);
+                $resultName = substr(str_replace($path, '', $filePath), 0, (strlen(SmartyEngine::EXTENSION) + 1) * -1);
 
                 $files[$resultPath] = $resultName;
             }
