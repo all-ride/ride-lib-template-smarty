@@ -62,7 +62,7 @@ class SmartyEngine extends AbstractEngine {
      * variables
      * @return null
      */
-    public function __construct(SmartyResourceHandler $resourceHandler, File $compileDirectory, $escapeHtml) {
+    public function __construct(SmartyResourceHandler $resourceHandler, File $compileDirectory, $escapeHtml = false) {
         $compileDirectory->create();
 
         $this->smarty = new Smarty();
