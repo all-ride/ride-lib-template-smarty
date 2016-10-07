@@ -58,14 +58,17 @@ class SmartyEngine extends AbstractEngine {
      * Resource handler for the template engine
      * @param \ride\library\system\file\File $compileDirectory Directory for
      * the compiled templates
+     * @param bool $escapeHtml Set to true for auto escaping of rendered
+     * variables
      * @return null
      */
-    public function __construct(SmartyResourceHandler $resourceHandler, File $compileDirectory) {
+    public function __construct(SmartyResourceHandler $resourceHandler, File $compileDirectory, $escapeHtml = false) {
         $compileDirectory->create();
 
         $this->smarty = new Smarty();
         $this->smarty->caching = false;
         $this->smarty->compile_dir = $compileDirectory->getPath();
+        $this->smarty->escape_html = $escapeHtml;
 
         $this->setResourceHandler($resourceHandler);
     }
