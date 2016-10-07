@@ -6,6 +6,8 @@ Read the documentation for [Smarty](http://www.smarty.net).
 
 ## Code Sample
 
+Check this code sample to see how to initialize this library:
+
 ```php
 use ride\library\template\engine\SmartyEngine;
 use ride\library\template\engine\SmartyResourceHandler;
