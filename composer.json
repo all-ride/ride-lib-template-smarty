@@ -11,7 +11,7 @@
     "require": {
         "ride/lib-system": "^1.0.0",
         "ride/lib-template": "^1.0.0",
-        "smarty/smarty": "dev-master#d3e26fb679081bc5f4427d86cb8d4275e835e094"
+        "smarty/smarty": "~3.1"
     },
     "autoload": {
         "psr-0": {
