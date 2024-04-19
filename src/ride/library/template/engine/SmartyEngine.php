@@ -5,11 +5,12 @@ namespace ride\library\template\engine;
 use ride\library\system\file\File;
 use ride\library\template\exception\ResourceNotSetException;
 use ride\library\template\exception\TemplateException;
+use ride\library\template\extension\CallablePassThroughExtension;
 use ride\library\template\Template;
 use ride\library\template\ThemedTemplate;
 
 use \Exception;
-use \Smarty;
+use Smarty\Smarty;
 
 /**
  * Implementation of the Smarty template engine
@@ -48,13 +49,15 @@ class SmartyEngine extends AbstractEngine {
 
     /**
      * Implementation of the resource handler
-     * @var \ride\library\template\SmartyResourceHandler
+     * @var \ride\library\template\engine\SmartyResourceHandler
      */
     protected $resourceHandler;
 
+    protected $loadedPlugins = [];
+
     /**
      * Constructs a new Smarty template engine
-     * @param \ride\library\template\SmartyResourceHandler $resourceHandler
+     * @param \ride\library\template\engine\SmartyResourceHandler $resourceHandler
      * Resource handler for the template engine
      * @param \ride\library\system\file\File $compileDirectory Directory for
      * the compiled templates
@@ -71,15 +74,17 @@ class SmartyEngine extends AbstractEngine {
 
         $this->smarty = new Smarty();
         $this->smarty->caching = false;
-        $this->smarty->compile_dir = $compileDirectory->getPath();
+        $this->smarty->setCompileDir($compileDirectory->getPath());
         $this->smarty->escape_html = $escapeHtml;
+        $this->smarty->addExtension(new CallablePassThroughExtension());
+
 
         $this->setResourceHandler($resourceHandler);
     }
 
     /**
      * Sets the resource handler for the template engine
-     * @param ride\library\template\SmartyResourceHandler
+     * @param SmartyResourceHandler $resourceHandler
      * $resourceHandler Handler of template resources
      * @return null
      */
@@ -92,7 +97,7 @@ class SmartyEngine extends AbstractEngine {
 
     /**
      * Gets the resource handler of the template engine
-     * @return \ride\library\template\SmartyResourceHandler
+     * @return \ride\library\template\engine\SmartyResourceHandler
      */
     public function getResourceHandler() {
         return $this->resourceHandler;
@@ -110,9 +115,81 @@ class SmartyEngine extends AbstractEngine {
             $directories = $directory;
         }
 
-        foreach ($directories as $directory) {
-            $this->smarty->addPluginsDir($directory);
+        foreach (array_reverse($directories) as $directory) {
+            foreach ((array)$directory as $v) {
+                $path = $this->smarty->_realpath(rtrim($v ?? '', '/\\') . DIRECTORY_SEPARATOR, true);
+                $this->loadPluginsFromDir($path);
+            }
         }
+    }
+
+    public function loadPluginsFromDir(string $path)
+    {
+        foreach([
+                    'function',
+                    'modifier',
+                    'block',
+                    'compiler',
+                    'prefilter',
+                    'postfilter',
+                    'outputfilter',
+                ] as $type) {
+            foreach (glob($path  . $type . '.?*.php') as $filename) {
+                $pluginName = $this->getPluginNameFromFilename($filename);
+                if ($pluginName !== null) {
+                    $functionOrClassName = 'smarty_' . $type . '_' . $pluginName;
+                    if (!in_array($functionOrClassName, $this->loadedPlugins, true)){
+                        require_once $filename;
+                        if ((function_exists($functionOrClassName) || class_exists($functionOrClassName))) {
+                            $this->loadedPlugins[] = $functionOrClassName;
+                            $this->smarty->registerPlugin($type, $pluginName, $functionOrClassName, true, []);
+                        }
+                    }
+                }
+            }
+        }
+
+        $type = 'resource';
+        foreach (glob($path  . $type . '.?*.php') as $filename) {
+            $pluginName = $this->getPluginNameFromFilename($filename);
+            if ($pluginName !== null) {
+                $className = 'smarty_' . $type . '_' . $pluginName;
+
+                if (!in_array($className, $this->loadedPlugins, true)){
+                    require_once $filename;
+                    if (class_exists($className)) {
+                        $this->loadedPlugins[] = $className;
+                        $this->smarty->registerResource($pluginName, new $className());
+                    }
+                }
+            }
+        }
+
+        $type = 'cacheresource';
+        foreach (glob($path  . $type . '.?*.php') as $filename) {
+            $pluginName = $this->getPluginNameFromFilename($filename);
+            if ($pluginName !== null) {
+                $className = 'smarty_' . $type . '_' . $pluginName;
+
+                if (!in_array($className, $this->loadedPlugins, true) && class_exists($className)){
+                    require_once $filename;
+                    $this->loadedPlugins[] = $className;
+                    $this->smarty->registerCacheResource($pluginName, new $className());
+                }
+            }
+        }
+    }
+
+    /**
+     * @param $filename
+     *
+     * @return string|null
+     */
+    private function getPluginNameFromFilename($filename) {
+        if (!preg_match('/.*\.([a-z_A-Z0-9]+)\.php$/',$filename,$matches)) {
+            return null;
+        }
+        return $matches[1];
     }
 
     /**
