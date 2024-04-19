@@ -5,16 +5,13 @@ namespace ride\library\template\engine;
 use ride\library\system\file\browser\FileBrowser;
 use ride\library\template\exception\ResourceNotFoundException;
 
-use \Smarty_Resource_Custom;
-use \Smarty;
-
-// load Smarty to get the Smarty_Resource_Custom class is loaded
-Smarty::SMARTY_VERSION;
+use ride\library\template\exception\TemplateException;
+use Smarty\Resource\CustomPlugin;
 
 /**
  * Default resource handler for Smarty according to the Zibo standards
  */
-class SmartyResourceHandler extends Smarty_Resource_Custom {
+class SmartyResourceHandler extends CustomPlugin {
 
     /**
      * File browser to lookup the templates
@@ -93,13 +90,13 @@ class SmartyResourceHandler extends Smarty_Resource_Custom {
      * @param string $name Relative path of the template to the view folder
      * without the extension
      * @param string $source Content of the template source file
-     * @param int $timestamp timestamp of the last modification date
+     * @param int $mtime timestamp of the last modification date
      */
-    protected function fetch($name, &$source, &$timestamp) {
+    protected function fetch($name, &$source, &$mtime) {
         $templateFile = $this->getFile($name);
 
         $source = $templateFile->read();
-        $timestamp = $templateFile->getModificationTime();
+        $mtime = $templateFile->getModificationTime();
     }
 
     /**
